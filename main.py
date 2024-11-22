@@ -7,7 +7,7 @@ SCENARIO_API = "http://localhost:8090"
 BACKEND_API = "http://localhost:8080"
 
 # Step 1: Create a scenario (assuming it's already done via frontend UI)
-scenario_id = "8f599eca-7531-47b3-9268-2a221f8c66f4"  # Replace with actual scenario ID from the UI
+scenario_id = "your_scenario_id"  # Replace with actual scenario ID from the UI
 
 # Step 2: Initialize the scenario
 def initialize_scenario(scenario_id):
