@@ -1,0 +1,12 @@
+.navbar {
+    background-color: white;
+    border-bottom: #ea0a8e;
+    border-bottom-style: solid;
+    color: black;
+}
+
+.routing-button {
+    border: solid #ea0a8e;
+    border-radius: 5px;
+    margin: 10px;
+}

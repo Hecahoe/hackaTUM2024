@@ -7,11 +7,11 @@ SCENARIO_API = "http://localhost:8090"
 BACKEND_API = "http://localhost:8080"
 
 # Step 1: Create a scenario (assuming it's already done via frontend UI)
-scenario_id = "your_scenario_id"  # Replace with actual scenario ID from the UI
+scenario_id = "8f599eca-7531-47b3-9268-2a221f8c66f4"  # Replace with actual scenario ID from the UI
 
 # Step 2: Initialize the scenario
 def initialize_scenario(scenario_id):
-    response = requests.post(f"{SCENARIO_API}/scenario", json={"scenario_id": scenario_id})
+    response = requests.get(f"{SCENARIO_API}/Scenarios/get_scenario/{scenario_id}", json={"scenario_id": scenario_id})
     if response.status_code == 200:
         print("Scenario initialized successfully.")
     else:
@@ -21,14 +21,17 @@ def initialize_scenario(scenario_id):
 # Step 3: Run the scenario
 def run_scenario(scenario_id, speed=0.2):
     response = requests.post(
-        f"{SCENARIO_API}/runner/launch_scenario",
+        f"{SCENARIO_API}/Runner/launch_scenario/{scenario_id}",
         json={"scenario_id": scenario_id, "speed": speed}
     )
+    print("Response status code:", response.status_code)
+    print("Response text:", response.text)  # Log raw response
     if response.status_code == 200:
         print("Scenario running...")
     else:
-        print("Failed to launch scenario:", response.json())
+        print("Failed to launch scenario:", response.text)  # Print raw text if JSON fails
         exit()
+
 
 # Step 4: Get the current scenario state
 def get_scenario_state(scenario_id):
