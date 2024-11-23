@@ -112,27 +112,3 @@ def get_vehicles(scenarioid):
 
 
 def get_customers(scenarioid):
-    return requests.get(f"{be}scenarios/{scenarioid}/customers").json()
-
-
-def get_available_customers(customers):
-    avail_custs = []
-    for c in customers:
-        if c["awaitingService"]:
-            avail_custs.append(c)
-    return avail_custs
-
-
-def get_available_vehicles(vehicles):
-    avail_vehics = []
-    for v in vehicles:
-        if v["isAvailable"]:
-            avail_vehics.append(v)
-    return avail_vehics
-
-
-def customers_left(customers):
-    for c in customers:
-        if c["awaitingService"]:
-            return True
-    return False
