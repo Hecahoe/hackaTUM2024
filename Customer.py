@@ -7,14 +7,14 @@ class Customer:
         self.destinationX = destinationX
         self.destinationY = destinationY
         self.awaitingService = True
-        self.arrivedAtDestination = False
 
     def __repr__(self):
         return f"Customer(id={self.id}, coordX={self.coordX}, coordY={self.coordY}, destination=({self.destinationX}, {self.destinationY}))"
 
 
-    def enter(self):
-        self.awaitingService = False
-
-    def leave(self):
-        self.arrivedAtDestination = True
+    #
+    # def enter(self):
+    #     self.awaitingService = False
+    #
+    # def leave(self):
+    #     self.arrivedAtDestination = True

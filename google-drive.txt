@@ -1,1 +1,41 @@
-https://docs.google.com/document/d/1MAVin2T16frT7ZNR0t8z745iDG53hjk48lCiUsUpXUU/edit?usp=sharing
+Pseudocode:
+
+Create a scenario -> customer input: n vehicles and m customers
+
+
+send the scenario to the api
+    - scenario/create -> returns scenario_ID
+    - Scenarios/initialise → {
+        "id": "c893ba6d-b708-4d91-9882-6b037019d775"
+        }
+    - Scenario/ lauch
+
+
+Scenarios/get_scenario
+
+//Initialize Methode
+create n python vehicles and m python customers
+initialize the python customers and python vehicles
+
+/Scenarios/get_scenario/{scenario_id}
+methode um von json file auf unsere instances zu updaten
+
+zuweisung
+
+methode um von unseren instances eine json file zu erstellen
+
+/Scenarios/update_scenario/{scenario_id}
+
+wdh:
+
+//Updating methode
+/Scenarios/get_scenario/{scenario_id}
+methode um von json file auf unsere instances zu updaten
+
+zuweisung
+
+methode um von unseren instances eine json file zu erstellen
+
+
+
+

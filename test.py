@@ -113,6 +113,7 @@ def calculate_cost_matrix(vehicles, customers):
 
     #filter customers that awaitingService == False
 
+
     num_vehicles = len(vehicles)
     num_customers = len(customers)
     # Initialize cost matrix with distances
