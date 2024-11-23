@@ -6,12 +6,10 @@ from scipy.optimize import linear_sum_assignment
 SCENARIO_API = "http://localhost:8090"
 BACKEND_API = "http://localhost:8080"
 
-# Step 1: Create a scenario (assuming it's already done via frontend UI)
-scenario_id = "your_scenario_id"  # Replace with actual scenario ID from the UI
-
 # Step 2: Initialize the scenario
 def initialize_scenario(scenario_id):
-    response = requests.post(f"{SCENARIO_API}/scenario", json={"scenario_id": scenario_id})
+    response = requests.post(f"{SCENARIO_API}/Scenarios/get_scenario/{scenario_id}")
+    # response = requests.post(f"{SCENARIO_API}/scenario", json={"scenario_id": scenario_id})
     if response.status_code == 200:
         print("Scenario initialized successfully.")
     else:
@@ -90,5 +88,8 @@ def optimize_robotaxis(scenario_id):
         # Update the scenario with new assignments
         update_scenario(assignments, scenario_id)
 
-# Run the optimizer
-optimize_robotaxis(scenario_id)
+
+
+if __name__ == '__main__':
+    scenario_id = "7cb88d6e-dda7-445f-99ed-8e6a99bac37f"
+    initialize_scenario(scenario_id)
