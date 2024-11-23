@@ -44,11 +44,8 @@ def start(scenarioid):
 
     launch_scenario(scenarioid)
 
-    customers = get_customers(scenarioid)
-    vehicles = get_vehicles(scenarioid)
-
-    avail_custs = get_available_customers(customers)
-    avail_vehics = get_available_vehicles(vehicles)
+    avail_custs = fleetmanager.get_waiting_customers()
+    avail_vehics = fleetmanager.get_available_vehicles()
 
     # while len(avail_custs) != 0:
     updates = []
@@ -59,8 +56,8 @@ def start(scenarioid):
     if len(updates) != 0:
         response = update_scenario(scenarioid, updates)
 
-    avail_custs = get_available_customers(get_customers(scenarioid))
-    avail_vehics = get_available_vehicles(get_vehicles(scenarioid))
+    avail_custs = fleetmanager.get_waiting_customers()
+    avail_vehics = fleetmanager.get_available_vehicles()
     time.sleep(3)
 
     response = requests.get(f"{runner}Scenarios/get_scenario/{scenarioid}")
@@ -118,26 +115,3 @@ def get_vehicles(scenarioid):
 
 def get_customers(scenarioid):
     return requests.get(f"{be}scenarios/{scenarioid}/customers").json()
-
-
-def get_available_customers(customers):
-    avail_custs = []
-    for c in customers:
-        if c["awaitingService"]:
-            avail_custs.append(c)
-    return avail_custs
-
-
-def get_available_vehicles(vehicles):
-    avail_vehics = []
-    for v in vehicles:
-        if v["isAvailable"]:
-            avail_vehics.append(v)
-    return avail_vehics
-
-
-def customers_left(customers):
-    for c in customers:
-        if c["awaitingService"]:
-            return True
-    return False
