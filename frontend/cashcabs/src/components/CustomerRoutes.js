@@ -10,7 +10,7 @@ import 'leaflet.animatedmarker/src/AnimatedMarker';
 const carIcon = new L.Icon({
     iconUrl: 'https://cdn-icons-png.flaticon.com/512/744/744465.png',
     iconSize: [30, 30],
-    iconAnchor: [15, 15],
+    iconAnchor: [12, 50],
 });
 
 const CustomerRoutes = ({startPoint, endPoint}) => {

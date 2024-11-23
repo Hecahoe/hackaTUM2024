@@ -1,13 +1,13 @@
-import {MapContainer, TileLayer, Marker, Polyline, useMap} from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
-import React, {useEffect, useState} from 'react';
+import React, { useState } from 'react';
 import L from 'leaflet';
 import 'leaflet.animatedmarker/src/AnimatedMarker'; // Include the plugin
 import startIconImage from '../rsc/startIcon.png';
 import EndIconImage from '../rsc/flag.png';
 import AnimatedCar from "../components/AnimatedCar";
 import CustomerRoutes from "../components/CustomerRoutes";
-import "./mapComponent.css"
+import "./mapComponent.css";
 
 // Define icons
 const carIcon = new L.Icon({
@@ -28,10 +28,8 @@ const endIcon = new L.Icon({
     iconAnchor: [15, 25],
 });
 
-const MapComponent = () => {
-    const [startAnimation, setStartAnimation] = useState(false); // Track animation state
+const MapComponent = ({startAnimation={startAnimation}}) => {
     const center = [48.148966, 11.602188]; // center
-
 
     const cars = [
         {
@@ -41,7 +39,7 @@ const MapComponent = () => {
         },
         {
             id: 2,
-            startPoint: [48.1455, 11.585],
+            startPoint: [48.19, 11.585],
             endPoint: [48.1500, 11.600],
         },
         {
@@ -52,7 +50,6 @@ const MapComponent = () => {
     ];
 
     const customer = [
-
         {
             id: 4,
             startPoint: [48.14, 11.580],
@@ -63,38 +60,25 @@ const MapComponent = () => {
             startPoint: [48.15, 11.55],
             endPoint: [48.1431, 11.52],
         },
-    ]
-
+    ];
 
     return (
         <div className={"map-box"}>
-            <button
-                onClick={() => setStartAnimation(true)}
-                style={{
-                    position: 'absolute',
-                    top: 10,
-                    right: 400,
-                    padding: '10px 20px',
-                    backgroundColor: '#ea0a8e',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '5px',
-                    cursor: 'pointer',
-                }}
-            >
-                Start Animation
-            </button>
-            <MapContainer center={center} zoom={13} style={{height: '100%', width: '100%'}}>
+            <MapContainer center={center} zoom={13} style={{ height: '100%', width: '100%' }}>
                 <TileLayer
                     url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
                     attribution="&copy; <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors &copy; <a href='https://carto.com/'>CARTO</a>"
                 />
 
-                {/* Render start and end markers for each car */}
+                {/* Render start and end markers for each customer */}
                 {customer.map(customer => (
                     <React.Fragment key={customer.id}>
-                        <Marker position={customer.startPoint} icon={startIcon}/>
-                        <Marker position={customer.endPoint} icon={endIcon}/>
+                        <Marker position={customer.startPoint} icon={startIcon}>
+                            <Popup>Start Point</Popup>
+                        </Marker>
+                        <Marker position={customer.endPoint} icon={endIcon}>
+                            <Popup>End Point</Popup>
+                        </Marker>
                         <CustomerRoutes
                             key={customer.id}
                             startPoint={customer.startPoint}
@@ -106,8 +90,12 @@ const MapComponent = () => {
                 {/* Render animated cars and their routes */}
                 {cars.map(car => (
                     <React.Fragment key={car.id}>
-                        <Marker position={car.startPoint} icon={startIcon}/>
-                        <Marker position={car.endPoint} icon={endIcon}/>
+                        <Marker position={car.startPoint} icon={startIcon}>
+                            <Popup>Start Point</Popup>
+                        </Marker>
+                        <Marker position={car.endPoint} icon={endIcon}>
+                            <Popup>End Point</Popup>
+                        </Marker>
                         <AnimatedCar
                             key={car.id}
                             startPoint={car.startPoint}
@@ -115,10 +103,8 @@ const MapComponent = () => {
                             startAnimation={startAnimation}
                         />
                     </React.Fragment>
-
                 ))}
             </MapContainer>
-
         </div>
     );
 };

@@ -7,9 +7,11 @@ import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 const FleetManager = () => {
     const [numCars, setNumCars] = useState(0);
     const [numCustomers, setNumCustomers] = useState(0);
-    const [kpiCollapsed, setKpiCollapsed] = useState(false); // State to manage KPI collapse
+    const [kpiCollapsed, setKpiCollapsed] = useState(false);
+    const [startAnimation, setStartAnimation] = useState(false)
 
     const handleRunScenario = () => {
+        setStartAnimation(!startAnimation)
         console.log(`Running scenario with ${numCars} cars and ${numCustomers} customers.`);
     };
 
@@ -34,7 +36,7 @@ const FleetManager = () => {
                     zIndex: 0,
                 }}
             >
-                <MapComponent/>
+                <MapComponent startAnimation={startAnimation}/>
             </Box>
 
             {/* Controls Section (Wide Panel) */}
