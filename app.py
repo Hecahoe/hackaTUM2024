@@ -35,8 +35,6 @@ def create():
 def start(scenarioid):
     initialize_scenario(scenarioid)
 
-    time.sleep(2)
-
     customer_objects = init_customers(get_customers(scenarioid))
     vehicles_objects = init_vehicles(get_vehicles(scenarioid))
 
@@ -44,24 +42,21 @@ def start(scenarioid):
 
     launch_scenario(scenarioid)
 
-    customers = get_customers(scenarioid)
-    vehicles = get_vehicles(scenarioid)
+    waiting_customers = fleetmanager.get_waiting_customers()
+    available_vehicles = fleetmanager.get_available_vehicles()
 
-    avail_custs = get_available_customers(customers)
-    avail_vehics = get_available_vehicles(vehicles)
+    while len(waiting_customers) != 0:
+        updates = []
+        for c, v in zip(waiting_customers, available_vehicles):
+            updates.append({"id": f"{v['id']}", "customerId": f"{c['id']}"})
+        print("update")
+        print(updates)
+        if len(updates) != 0:
+            response = update_scenario(scenarioid, updates)
 
-    # while len(avail_custs) != 0:
-    updates = []
-    for c, v in zip(avail_custs, avail_vehics):
-        updates.append({"id": f"{v['id']}", "customerId": f"{c['id']}"})
-    print("update")
-    print(updates)
-    if len(updates) != 0:
-        response = update_scenario(scenarioid, updates)
-
-    avail_custs = get_available_customers(get_customers(scenarioid))
-    avail_vehics = get_available_vehicles(get_vehicles(scenarioid))
-    time.sleep(3)
+        waiting_customers = fleetmanager.get_waiting_customers()
+        available_vehicles = fleetmanager.get_available_vehicles()
+        time.sleep(1 * SIMULATION_SPEED)
 
     response = requests.get(f"{runner}Scenarios/get_scenario/{scenarioid}")
     return response.json()
