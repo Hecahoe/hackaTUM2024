@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, request
 import requests
 import time
 
@@ -12,30 +12,52 @@ SIMULATION_SPEED = 0.1
 
 @app.route("/create")
 def create():
-    params = {"numberOfVehicles": 2, "numberOfCustomers": 4}
+    vehicles = request.args.get("vehicles")
+    customers = request.args.get("customers")
+    params = {
+        "numberOfVehicles": vehicles if vehicles else 5,
+        "numberOfCustomers": customers if customers else 10,
+    }
     response = requests.post(be + "scenario/create", params=params)
     return response.json()
+
+
+@app.route("/")
+def index():
+    return "hello"
 
 
 @app.route("/<scenarioid>")
 def start(scenarioid):
     body = {"id": f"{scenarioid}"}
-    response = requests.post(f"{runner}Scenarios/initialize_scenario", json=body)
-    print(response.status_code)
-    print(response.json())
+    headers = {"accept": "application/json", "Content-Type": "application/json"}
+    params = {"db_scenario_id": scenarioid}
+    response = requests.post(
+        f"{runner}Scenarios/initialize_scenario",
+        json={},
+        headers=headers,
+        params=params,
+    )
+    if response.status_code == 200:
+        print("Initialized successfully")
+    else:
+        print(f"Problem initializing: {response.status_code}")
+        return response.json()
 
-    body = {"id": f"{scenarioid}"}
-    response = requests.post(f"{runner}Scenarios/initialize_scenario", json=body)
-    print(response.status_code)
-    print(response.json())
-
+    speed = request.args.get("speed")
     response = requests.post(
         f"{runner}Runner/launch_scenario/{scenarioid}",
         json=body,
-        params={"speed": SIMULATION_SPEED},
+        params={
+            "speed": speed if speed else SIMULATION_SPEED,
+            "accept": "application/json",
+        },
     )
-    print(response.status_code)
-    print(response.json())
+    if response.status_code == 200:
+        print("Initialized successfully")
+    else:
+        print(f"Problem initializing: {response.status_code}")
+        return response.json()
 
     customers = get_customers(scenarioid)
     vehicles = get_vehicles(scenarioid)
@@ -58,7 +80,7 @@ def start(scenarioid):
 
     avail_custs = get_available_customers(get_customers(scenarioid))
     avail_vehics = get_available_vehicles(get_vehicles(scenarioid))
-    # time.sleep(3)
+    time.sleep(3)
 
     response = requests.get(f"{runner}Scenarios/get_scenario/{scenarioid}")
     return response.json()
