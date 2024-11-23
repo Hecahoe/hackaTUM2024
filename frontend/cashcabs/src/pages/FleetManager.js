@@ -8,11 +8,53 @@ const FleetManager = () => {
     const [numCars, setNumCars] = useState(0);
     const [numCustomers, setNumCustomers] = useState(0);
     const [kpiCollapsed, setKpiCollapsed] = useState(false);
+
+    const [scenario, setScenario] = useState(false)
     const [startAnimation, setStartAnimation] = useState(false)
 
+    // State to store fetched data
+    const [cars, setCars] = useState([]);
+    const [customers, setCustomers] = useState([]);
+    const [finishedCustomers, setFinishedCustomers] = useState([]);
+    const [routes, setRoutes] = useState([]);
+
     const handleRunScenario = () => {
+        setScenario(true)
+        const fetchInitialData = async () => {
+            try {
+                const response = await fetch("http://127.0.0.1:5000/initialize");
+                const data = await response.json();
+                setCars(data.cars);
+                setCustomers(data.customers);
+                setNumCars(data.cars.length);
+                setNumCustomers(data.customers.length);
+            } catch (error) {
+                console.error("Error fetching initial data:", error);
+            }
+        };
+        fetchInitialData()
+    };
+
+    const fetchUpdates = async () => {
+        setScenario(false)
+        try {
+            const response = await fetch("http://127.0.0.1:5000/update");
+            const data = await response.json();
+
+            if (data.type === "finished_customers") {
+                // Add finished customers to the state
+                setFinishedCustomers((prev) => [...prev, ...data.data]);
+            } else if (data.type === "new_routes") {
+                // Add new routes to the state
+                setRoutes((prev) => [...prev, ...data.data]);
+            }
+        } catch (error) {
+            console.error("Error fetching updates:", error);
+        }
+    };
+
+    const initializeScenario = () => {
         setStartAnimation(!startAnimation)
-        console.log(`Running scenario with ${numCars} cars and ${numCustomers} customers.`);
     };
 
     return (
@@ -79,7 +121,15 @@ const FleetManager = () => {
                     variant="contained"
                     color="primary"
                     onClick={handleRunScenario}
-                    sx={{height: '100%', width: '15%'}}
+                    sx={{height: '100%', width: '15%', backgroundColor: '#ea0a8e'}}
+                >
+                    Create Scenario
+                </Button>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={fetchUpdates}
+                    sx={{height: '100%', width: '15%', backgroundColor: scenario? "#ea0a8e":"gray"}}
                 >
                     Run Scenario
                 </Button>

@@ -3,7 +3,8 @@ import {Polyline, useMap} from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import 'leaflet.animatedmarker/src/AnimatedMarker';
-import carIconImage from "../rsc/carIcon.png"; // Import the custom car image
+import carIconImage from "../rsc/carIcon.png";
+import {popup} from "leaflet/src/layer"; // Import the custom car image
 
 // Define the car icon with dynamic rotation
 const carIcon = (rotation) =>
@@ -17,8 +18,10 @@ const carIcon = (rotation) =>
             background-repeat: no-repeat; 
             background-image: url('${carIconImage}');
             transition: transform 1s ease-in-out;
-        "></div>`,
+        ">
+</div>`,
         iconAnchor: [6, 15],
+
     });
 
 const AnimatedCar = ({startPoint, endPoint, startAnimation}) => {
