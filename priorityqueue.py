@@ -9,7 +9,8 @@ class PriorityQueue:
 
     def __init__(self, values: dict):
         self.values = values
-        self.queue = heapq.heapify([v for v in values.keys()])
+        self.queue = [v for v in values.keys()]
+        heapq.heapify(self.queue)
 
     def get_smallest(self):
         if self.queue:

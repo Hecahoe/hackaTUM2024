@@ -66,9 +66,11 @@ def start(scenarioid):
 
 
 def update_scenario(scenarioid, updates):
+    json = {"vehicles": [{"id": u[0], "customerId": u[1]} for u in updates]}
+    print(json)
     response = requests.put(
         f"{runner}Scenarios/update_scenario/{scenarioid}",
-        json={"vehicles": [{"id": u[0], "customerId": u[1]} for u in updates]},
+        json=json,
     )
     if response.status_code == 200:
         print("Update successfull")

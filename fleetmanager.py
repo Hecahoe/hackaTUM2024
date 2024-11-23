@@ -20,6 +20,7 @@ class Fleetmanager:
         for c in self.customers.values():
             if c.awaitingService and c.id not in vehicle_customerIds:
                 waiting_customers[c.id] = c
+        print(waiting_customers)
         return waiting_customers
 
     def get_available_vehicles(self):
@@ -48,7 +49,7 @@ class Fleetmanager:
         for v in self.get_available_vehicles().values():
             heap = heaps[v.id]
             customer_id = None
-            while customer_id not in assigned_customers and not heap.is_empty():
+            while customer_id in assigned_customers and not heap.is_empty():
                 customer_id = heap.get_smallest()
             if customer_id is not None:
                 updates.append((v.id, customer_id))
