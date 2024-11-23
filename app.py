@@ -11,7 +11,7 @@ app = Flask(__name__)
 be = "http://127.0.0.1:8080/"
 runner = "http://127.0.0.1:8090/"
 
-SIMULATION_SPEED = 0.1
+SIMULATION_SPEED = 0.01
 
 
 @app.route("/")
@@ -43,20 +43,23 @@ def start(scenarioid):
     launch_scenario(scenarioid)
 
     waiting_customers = fleetmanager.get_waiting_customers()
-    available_vehicles = fleetmanager.get_available_vehicles()
+    # available_vehicles = fleetmanager.get_available_vehicles()
 
     while len(waiting_customers) != 0:
-        updates = []
-        for c, v in zip(waiting_customers, available_vehicles):
-            updates.append({"id": f"{v['id']}", "customerId": f"{c['id']}"})
-        print("update")
-        print(updates)
+        updates = fleetmanager.get_updates()
         if len(updates) != 0:
             response = update_scenario(scenarioid, updates)
+            print("Update")
+            print(response.json())
+        else:
+            print("No update")
+        time.sleep(100 * SIMULATION_SPEED)
+
+        fleetmanager.set_customers(init_customers(get_customers(scenarioid)))
+        fleetmanager.set_vehicles(init_customers(get_vehicles(scenarioid)))
 
         waiting_customers = fleetmanager.get_waiting_customers()
-        available_vehicles = fleetmanager.get_available_vehicles()
-        time.sleep(1 * SIMULATION_SPEED)
+        print(f"Waiting customers {len(waiting_customers)}")
 
     response = requests.get(f"{runner}Scenarios/get_scenario/{scenarioid}")
     return response.json()
@@ -65,7 +68,7 @@ def start(scenarioid):
 def update_scenario(scenarioid, updates):
     response = requests.put(
         f"{runner}Scenarios/update_scenario/{scenarioid}",
-        json={"vehicles": updates},
+        json={"vehicles": [{"id": u[0], "customerId": u[1]} for u in updates]},
     )
     if response.status_code == 200:
         print("Update successfull")
@@ -112,3 +115,4 @@ def get_vehicles(scenarioid):
 
 
 def get_customers(scenarioid):
+    return requests.get(f"{be}scenarios/{scenarioid}/customers").json()
