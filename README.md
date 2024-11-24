@@ -12,4 +12,5 @@ flask --app app --debug run
 - go to [http://localhost:5000/<id>]
 
 
-[T-Systems-hackaTUM2024-finalpitches-prelim.pdf](https://github.com/user-attachments/files/17891495/T-Systems-hackaTUM2024-finalpitches-prelim.pdf)
+
+<img width="1512" alt="Bildschirmfoto 2024-11-24 um 03 21 21" src="https://github.com/user-attachments/assets/def9c0ba-17df-4909-857a-8ef2d4d5153a">
