@@ -1,4 +1,4 @@
-# hackaTUM24
+# hackaTUM24🚀
 
 ## Exection
 
