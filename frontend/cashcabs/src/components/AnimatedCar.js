@@ -27,6 +27,7 @@ const carIcon = (rotation) =>
 const AnimatedCar = ({startPoint, endPoint, startAnimation}) => {
     const map = useMap();
 
+
     const [testRoute, setTestRoute] = useState([]);
     const [currentAngle, setCurrentAngle] = useState(0);
 
@@ -122,7 +123,7 @@ const AnimatedCar = ({startPoint, endPoint, startAnimation}) => {
             const data = await response.json();
             const polyline = data.routes[0].geometry;
             const decodedRoute = decodePolyline(polyline);
-            const smoothedRoute = interpolateRoute(decodedRoute, 5); // Interpolate with a 10-meter step
+            const smoothedRoute = interpolateRoute(decodedRoute, 500); // Interpolate with a 5-meter step
             setTestRoute(smoothedRoute); // Set the smoothed route into state
         } catch (error) {
             console.error('Error fetching the route:', error);
@@ -131,43 +132,45 @@ const AnimatedCar = ({startPoint, endPoint, startAnimation}) => {
 
     // Fetch route when component mounts or startPoint/endPoint change
     useEffect(() => {
+        if (!startPoint || !endPoint) return;
         fetchRoute(startPoint, endPoint);
     }, [startPoint, endPoint]);
 
-    // Create animated marker when route is available and animation is triggered
+
     useEffect(() => {
-        if (!startAnimation || testRoute.length === 0) return; // Wait for route and animation trigger
+    if (!startAnimation || testRoute.length === 0) return; // Wait for route and animation trigger
 
-        const latLngs = L.polyline(testRoute).getLatLngs();
+    const latLngs = L.polyline(testRoute).getLatLngs();
 
-        const animatedMarker = new L.Marker(latLngs[0], {
-            icon: carIcon(currentAngle), // Initial rotation
-        });
+    const animatedMarker = new L.Marker(latLngs[0], {
+        icon: carIcon(currentAngle), // Initial rotation
+    });
 
-        map.addLayer(animatedMarker);
+    map.addLayer(animatedMarker);
 
-        let currentIndex = 0;
-        const interval = setInterval(() => {
-            if (currentIndex < latLngs.length - 1) {
-                const nextIndex = currentIndex + 1;
-                const angle = calculateBearing(
-                    [latLngs[currentIndex].lat, latLngs[currentIndex].lng],
-                    [latLngs[nextIndex].lat, latLngs[nextIndex].lng]
-                );
-                setCurrentAngle(angle); // Update rotation
-                animatedMarker.setIcon(carIcon(angle));
-                animatedMarker.setLatLng(latLngs[nextIndex]);
-                currentIndex = nextIndex;
-            } else {
-                clearInterval(interval); // Stop animation at the end
-            }
-        }, 40); // Adjust interval for smooth movement
+    let currentIndex = 0;
+    const interval = setInterval(() => {
+        if (currentIndex < latLngs.length - 1) {
+            const nextIndex = currentIndex + 1;
+            const angle = calculateBearing(
+                [latLngs[currentIndex].lat, latLngs[currentIndex].lng],
+                [latLngs[nextIndex].lat, latLngs[nextIndex].lng]
+            );
+            setCurrentAngle(angle); // Update rotation
+            animatedMarker.setIcon(carIcon(angle));
+            animatedMarker.setLatLng(latLngs[nextIndex]);
+            currentIndex = nextIndex;
+        } else {
+            clearInterval(interval); // Stop animation at the end
+        }
+    }, 200); // Adjust interval for smooth movement
 
-        return () => {
-            map.removeLayer(animatedMarker);
-            clearInterval(interval); // Cleanup on unmount
-        };
-    }, [startAnimation]); // Re-run effect when animation or route changes
+    return () => {
+        map.removeLayer(animatedMarker);
+        clearInterval(interval); // Cleanup on unmount
+    };
+}, [startAnimation, testRoute]); // Added `testRoute` as dependency
+
 
     return (
         <div>

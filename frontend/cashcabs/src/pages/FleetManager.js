@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import MapComponent from "../components/MapComponent";
 import {Button, TextField, Box, Typography, IconButton, Collapse} from '@mui/material';
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
@@ -20,6 +20,7 @@ const FleetManager = () => {
 
     const handleRunScenario = () => {
         setScenario(true)
+        setStartAnimation(false)
         const fetchInitialData = async () => {
             try {
                 const response = await fetch("http://127.0.0.1:5000/initialize");
@@ -37,6 +38,7 @@ const FleetManager = () => {
 
     const fetchUpdates = async () => {
         setScenario(false)
+        setStartAnimation(true)
         try {
             const response = await fetch("http://127.0.0.1:5000/update");
             const data = await response.json();
@@ -53,9 +55,15 @@ const FleetManager = () => {
         }
     };
 
-    const initializeScenario = () => {
-        setStartAnimation(!startAnimation)
-    };
+    useEffect(() => {
+        let interval;
+        if (startAnimation) {
+            interval = setInterval(fetchUpdates, 2000); // Fetch updates every 2 seconds
+        } else {
+            clearInterval(interval); // Stop fetching updates when animation stops
+        }
+        return () => clearInterval(interval);
+    }, [startAnimation]);
 
     return (
         <Box
@@ -78,7 +86,13 @@ const FleetManager = () => {
                     zIndex: 0,
                 }}
             >
-                <MapComponent startAnimation={startAnimation}/>
+                <MapComponent
+                    startAnimation={startAnimation}
+                    cars={cars}
+                    customers={customers}
+                    finishedCustomers={finishedCustomers}
+                    routes={routes}
+                />
             </Box>
 
             {/* Controls Section (Wide Panel) */}
@@ -88,7 +102,7 @@ const FleetManager = () => {
                     top: '2vh',
                     right: '2vw',
                     width: '90%',
-                    height: '8vh',
+                    height: '6vh',
                     backgroundColor: '#ffffff',
                     padding: 2,
                     borderRadius: 1,
@@ -129,7 +143,7 @@ const FleetManager = () => {
                     variant="contained"
                     color="primary"
                     onClick={fetchUpdates}
-                    sx={{height: '100%', width: '15%', backgroundColor: scenario? "#ea0a8e":"gray"}}
+                    sx={{height: '100%', width: '15%', backgroundColor: scenario ? "#ea0a8e" : "gray"}}
                 >
                     Run Scenario
                 </Button>
