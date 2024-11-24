@@ -13,7 +13,7 @@ runner = "http://127.0.0.1:8090/"
 
 SIMULATION_SPEED = 0.01
 scenarioid = None
-fleetmanager = Fleetmanager(None, None)
+fleetmanager = Fleetmanager([], [])
 
 
 @app.route("/")
