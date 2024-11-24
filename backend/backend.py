@@ -6,7 +6,8 @@ import random
 from flask_cors import CORS, cross_origin
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "*"}})
+
 
 # In-memory data storage with Munich coordinates
 data = {
@@ -39,6 +40,8 @@ def initialize():
 def update():
     """
     Update endpoint: randomly returns either finished customers or new routes.
+
+
     """
     if random.randrange(0, 100) > 80:
         return []
@@ -68,8 +71,10 @@ def update():
             new_route = {
                 "car_id": car["id"],
                 "start": [car["position"][0], car["position"][1]],
-                "end": [random.uniform(48.1000, 48.2000), random.uniform(11.5000, 11.6500)]
+                "end": [random.uniform(48.1000, 48.2000), random.uniform(11.5000, 11.6500)],
+                "time": random.randrange(20, 40)
             }
+
             data["new_routes"].append(new_route)
             return jsonify({
                 "type": "new_routes",

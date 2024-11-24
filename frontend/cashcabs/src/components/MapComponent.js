@@ -39,7 +39,6 @@ const MapComponent = ({
         <MapContainer center={center} zoom={13} style={{height: '100%', width: '100%'}}>
             <TileLayer
                 url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
-                attribution="&copy; <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors &copy; <a href='https://carto.com/'>CARTO</a>"
             />
 
             {/* Render start and end markers for each customer */}
@@ -47,7 +46,7 @@ const MapComponent = ({
                 if (car.position) {
                     return ((<React.Fragment key={car.id}>
                             <Marker position={car.position} icon={carIcon}>
-                                <Popup>Inactive Car</Popup>
+                                <Popup>Inactive Car: {car.id}</Popup>
                             </Marker>
                         </React.Fragment>
 
@@ -92,18 +91,14 @@ const MapComponent = ({
             {/* Render animated cars and their routes */}
             {routes.map((route, index) => {
 
+
                 if (route?.start && route?.end) {
                     return (<React.Fragment key={`route-${route.car_id}`}>
-                        <Marker position={route.start} icon={startIcon}>
-                            <Popup>Start Point</Popup>
-                        </Marker>
-                        <Marker position={route.end} icon={endIcon}>
-                            <Popup>End Point</Popup>
-                        </Marker>
                         <AnimatedCar
                             key={`animated-car-${index}`} // Ensure unique key
                             startPoint={route.start}
                             endPoint={route.end}
+                            time={route.time}
                             startAnimation={true}
                         />
                     </React.Fragment>)
