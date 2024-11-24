@@ -8,6 +8,12 @@ class Fleetmanager:
         self.customers = {c.id: c for c in customers}
         self.vehicles = {v.id: v for v in vehicles}
 
+    def get_customers(self):
+        return self.customers
+
+    def get_vehicles(self):
+        return self.vehicles
+
     def set_customers(self, customers):
         self.customers = {c.id: c for c in customers}
 

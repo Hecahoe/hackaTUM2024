@@ -12,6 +12,8 @@ be = "http://127.0.0.1:8080/"
 runner = "http://127.0.0.1:8090/"
 
 SIMULATION_SPEED = 0.01
+scenarioid = None
+fleetmanager = Fleetmanager(None, None)
 
 
 @app.route("/")
@@ -19,8 +21,10 @@ def index():
     return "hello"
 
 
-@app.route("/create")
-def create():
+@app.route("/initialize")
+def initialize():
+    global fleetmanager
+
     vehicles = request.args.get("vehicles")
     customers = request.args.get("customers")
     params = {
@@ -28,11 +32,8 @@ def create():
         "numberOfCustomers": customers if customers else 10,
     }
     response = requests.post(be + "scenario/create", params=params)
-    return response.json()
+    scenarioid = response.json()["id"]
 
-
-@app.route("/<scenarioid>")
-def start(scenarioid):
     initialize_scenario(scenarioid)
 
     launch_scenario(scenarioid)
@@ -43,16 +44,36 @@ def start(scenarioid):
 
     fleetmanager = Fleetmanager(customer_objects, vehicles_objects)
 
+    return scenario
+
+
+@app.route("/update")
+def start():
     waiting_customers = fleetmanager.get_waiting_customers()
 
-    while len(waiting_customers) != 0:
+    update_response = []
+    if len(waiting_customers) != 0:
         updates = fleetmanager.get_updates()
+        for u in updates:
+            vehicle = fleetmanager.get_vehicles()[u[0]]
+            customer = fleetmanager.get_customers()[u[1]]
+            update_response.append(
+                {
+                    "vehicleX": vehicle.coordX,
+                    "vehicleY": vehicle.coordY,
+                    "customerX": customer.coordX,
+                    "customerY": customer.coordY,
+                    "destinationX": customer.destinationX,
+                    "destinationY": customer.destinationY,
+                    "remainingTravelTime": vehicle.remainingTravelTime,
+                }
+            )
         if len(updates) != 0:
             response = update_scenario(scenarioid, updates)
             print("Update")
         else:
             print("No update")
-        time.sleep(100 * SIMULATION_SPEED)
+        time.sleep(10 * SIMULATION_SPEED)
 
         scenario = get_scenario(scenarioid)
         fleetmanager.set_customers(init_customers(scenario["customers"]))
@@ -61,9 +82,10 @@ def start(scenarioid):
         waiting_customers = fleetmanager.get_waiting_customers()
         print(f"Waiting customers {len(waiting_customers)}")
 
-    time.sleep(1)
-    response = requests.get(f"{runner}Scenarios/get_scenario/{scenarioid}")
-    return response.json()
+    finished_customers = [
+        c.id for c in fleetmanager.get_customers().values() if not c.awaitingService
+    ]
+    return {"finisched_customers": finished_customers, "updates": update_response}
 
 
 def update_scenario(scenarioid, updates):
