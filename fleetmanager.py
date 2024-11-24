@@ -46,13 +46,16 @@ class Fleetmanager:
         updates = []
         heaps = self.build_heap()
         assigned_customers = set()
-        for v in self.get_available_vehicles().values():
-            heap = heaps[v.id]
+        for v_id, heap in heaps.items():
             customer_id = None
-            while customer_id in assigned_customers and not heap.is_empty():
+            # while not heap.is_empty():
+            #     if customer_id not in assigned_customers:
+            #         customer_id = heap.get_smallest()
+            #         break
+            if not heap.is_empty():
                 customer_id = heap.get_smallest()
-            if customer_id is not None:
-                updates.append((v.id, customer_id))
+            if customer_id is not None and customer_id not in assigned_customers:
+                updates.append((v_id, customer_id))
                 assigned_customers.add(customer_id)
         return updates
 

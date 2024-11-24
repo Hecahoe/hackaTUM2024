@@ -35,45 +35,46 @@ def create():
 def start(scenarioid):
     initialize_scenario(scenarioid)
 
-    customer_objects = init_customers(get_customers(scenarioid))
-    vehicles_objects = init_vehicles(get_vehicles(scenarioid))
+    launch_scenario(scenarioid)
+
+    scenario = get_scenario(scenarioid)
+    customer_objects = init_customers(scenario["customers"])
+    vehicles_objects = init_vehicles(scenario["vehicles"])
 
     fleetmanager = Fleetmanager(customer_objects, vehicles_objects)
 
-    launch_scenario(scenarioid)
-
     waiting_customers = fleetmanager.get_waiting_customers()
-    # available_vehicles = fleetmanager.get_available_vehicles()
 
     while len(waiting_customers) != 0:
         updates = fleetmanager.get_updates()
         if len(updates) != 0:
             response = update_scenario(scenarioid, updates)
             print("Update")
-            print(response.json())
         else:
             print("No update")
         time.sleep(100 * SIMULATION_SPEED)
 
-        fleetmanager.set_customers(init_customers(get_customers(scenarioid)))
-        fleetmanager.set_vehicles(init_customers(get_vehicles(scenarioid)))
+        scenario = get_scenario(scenarioid)
+        fleetmanager.set_customers(init_customers(scenario["customers"]))
+        fleetmanager.set_vehicles(init_customers(scenario["vehicles"]))
 
         waiting_customers = fleetmanager.get_waiting_customers()
         print(f"Waiting customers {len(waiting_customers)}")
 
+    time.sleep(1)
     response = requests.get(f"{runner}Scenarios/get_scenario/{scenarioid}")
     return response.json()
 
 
 def update_scenario(scenarioid, updates):
     json = {"vehicles": [{"id": u[0], "customerId": u[1]} for u in updates]}
-    print(json)
+    print(f"updated: {json}")
     response = requests.put(
         f"{runner}Scenarios/update_scenario/{scenarioid}",
         json=json,
     )
     if response.status_code == 200:
-        print("Update successfull")
+        print("Update successful")
         return response
     else:
         print("Update failed")
@@ -113,8 +114,16 @@ def launch_scenario(scenarioid):
 
 
 def get_vehicles(scenarioid):
-    return requests.get(f"{be}scenarios/{scenarioid}/vehicles").json()
+    return requests.get(f"{runner}Scenarios/get_scenario/{scenarioid}").json()[
+        "vehicles"
+    ]
+
+
+def get_scenario(scenarioid):
+    return requests.get(f"{runner}Scenarios/get_scenario/{scenarioid}").json()
 
 
 def get_customers(scenarioid):
-    return requests.get(f"{be}scenarios/{scenarioid}/customers").json()
+    return requests.get(f"{runner}Scenarios/get_scenario/{scenarioid}").json()[
+        "customers"
+    ]
