@@ -17,7 +17,7 @@ const carIcon = new L.Icon({
 });
 
 const startIcon = new L.Icon({
-    iconUrl: startIconImage, iconSize: [30, 30], iconAnchor: [15, 30],
+    iconUrl: startIconImage, iconSize: [30, 30], iconAnchor: [0, 0],
 });
 
 const endIcon = new L.Icon({
